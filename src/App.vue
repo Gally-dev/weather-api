@@ -11,13 +11,14 @@
 
     <section class="weather-wrap" v-if="weather.main != undefined">
       <div class="location-box">
-        <h1 class="location">{{ weather.name }}</h1>
-        <p class="date">Monday 20 january 2022</p>
+        <h1 class="location">{{ weather.name }}, {{weather.sys.country}}</h1>
+        <p class="date">{{actualDate}}</p>
       </div>
 
       <article class="weather-box">
-        <h1 class="temp">9°C</h1>
-        <p class="weather">wind</p>
+        <h1 class="temp">{{convertFtoC}}°C</h1>
+        <p class="weather">{{weather.weather[0].description}}</p>
+        <p>ahoj</p>
       </article>
     </section>
   </main>
@@ -33,28 +34,43 @@ export default {
       base_url: "https://api.openweathermap.org/data/2.5/",
       query: "",
       weather: {},
+      date:" ",
     };
   },
   methods: {
-    // async fetchWeather() {
-    //   let response = await fetch(
-    //     `${this.base_url}weather?q=${this.query}&appid=${this.api_key}`
-    //   );
-    //   let data = await response.json();
-    //   this.weather = await data; //response napcham do weather objectu v datach
-    //   // this.query = "";
-    //   console.log(this.weather);
+    async fetchWeather() {
+      let response = await fetch(
+        `${this.base_url}weather?q=${this.query}&appid=${this.api_key}`
+      );
+      let data = await response.json();
+      this.weather = await data; //response napcham do weather objectu v datach
+      // this.query = "";
+      console.log(this.weather);
+    },
+
+    // fetchWeather() {
+    //   fetch(`${this.base_url}weather?q=${this.query}&appid=${this.api_key}`)
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //       this.weather = data;
+    //       console.log(this.weather);
+    //     });
+    //   this.query = "";
     // },
 
-    fetchWeather() {
-      fetch(`${this.base_url}weather?q=${this.query}&appid=${this.api_key}`)
-        .then((res) => res.json())
-        .then((data) => {
-          this.weather = data;
-          console.log(this.weather);
-        });
-      this.query = "";
+    
+  },
+  computed: {
+    convertFtoC() {
+      return Math.floor((this.weather.main.temp -32)*5 / 9) 
     },
+    //today
+    actualDate(){
+      let today = new Date();
+      // return today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+      let days =['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday']
+      return days[today.getDay()]+'   '+today.getDate()+'.'+(today.getMonth()+1)+'.'+today.getFullYear();
+    }
   },
 };
 </script>
@@ -85,8 +101,9 @@ main {
   );
 }
 .search-box {
-  width: 100%;
+  max-width: 300px;
   margin-bottom: 30px;
+  margin: 0 auto 30px auto;
 }
 .search-box .search-bar {
   display: block;
